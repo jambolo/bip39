@@ -1,0 +1,23 @@
+{
+  "name": "bip39",
+  "version": "0.1.0",
+  "description": "BIP 39 Utilities",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "compile": "coffee -c -o src/ -b cs/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jambolo/bip39.git"
+  },
+  "keywords": [
+    "bip39",
+    "bitcoin"
+  ],
+  "author": "John Bolton <jambolo@users.noreply.github.com> (https://jambolo.github.io)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jambolo/bip39/issues"
+  }
+}
