@@ -21,6 +21,7 @@
     "url": "https://github.com/jambolo/bip39/issues"
   },
   "dependencies": {
+    "base-58": "0.0.1",
     "yargs": "^15.3.1"
   }
 }
