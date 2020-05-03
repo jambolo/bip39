@@ -2051,4 +2051,4 @@ wordlists =
     "zoo"
   ]
 
-exports.wordlists = wordlists
+module.exports = wordlists
