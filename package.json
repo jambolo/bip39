@@ -19,5 +19,8 @@
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/jambolo/bip39/issues"
+  },
+  "dependencies": {
+    "yargs": "^15.3.1"
   }
 }
