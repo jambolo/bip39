@@ -6,7 +6,7 @@ Encodes the input into a mnemonic string.
 
 Note that the size of a BIP-39 source must be a multiple of 32 bits. If the size of the input is not a multiple of 32 bits, then it is padded with 0's.
 
-#### Command syntax:
+#### Command syntax
 
     encode (hex|base58|base64) [--words <number>] [--strict] [--language english] [--json] <input>
 
@@ -19,6 +19,7 @@ Note that the size of a BIP-39 source must be a multiple of 32 bits. If the size
 | base64  | Input is a base-64 value |
 
 #### Options (all are optional)
+
 | Options                       | Description |
 |-------------------------------|-------------|
 | --words `number`, -n `number` | Number of words to be generated. The input is truncated or padded with 0's if it doesn't match the specified value. If --strict is specified and the input doesn't match, the encode will fail. |
@@ -26,8 +27,30 @@ Note that the size of a BIP-39 source must be a multiple of 32 bits. If the size
 | --language, -l                | The wordlist to use. Currently, only english is supported and it is the default. |
 | --json, -j                    | Outputs the words in json format |
 
+
 ## decode
 Decodes a mnemonic string back to the source value.
+
+#### Command syntax
+
+    decode (address|wif|base58|base64|hex) [--language english] <mnemonic phrase>
+
+#### Formats (one must be specified)
+
+| Formats  | Description |
+|----------|-------------|
+|  address | Decoded into a bitcoin address.  |
+|  wif     | Decoded into a WIF-formatted private key. |
+|  base58  | Output format is base-58. |
+|  base64  | Output format is base-64. |
+|  hex     | Output format is hex. |
+
+#### Options (all are optional)
+
+| Options         | Description |
+|-----------------|-------------|
+|  --language, -l | The wordlist to be used to validate the mnemonic phrase (optional). |
+
 
 ## seed
 Generates a seed from a mnemonic string.
@@ -36,7 +59,7 @@ Generates a seed from a mnemonic string.
 
     seed [--passphrase <passphrase>] [--validate] [--language english] <mnemonic phrase>
 
-#### Options
+#### Options (all are optional)
 
 | Options | Description |
 |---------|-------------|
