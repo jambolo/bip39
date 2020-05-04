@@ -95,8 +95,6 @@ args = yargs
     return true
   .argv
 
-console.log "format=#{args.format}, words=#{args.words}, strict=#{args.strict}, language=#{args.language}, input='#{args.input}'"
-
 # Convert the input to binary based on the type
 switch args.format
   when "hex" then input = Buffer.from args.input, "hex"
@@ -105,10 +103,8 @@ switch args.format
 
 # If strict, then make sure the sizes match
 if args.strict and args.words? and input.length != args.words / 3 * 4
-  console.error "The size of the input does not correspond exactly to the requested number of words."
+  console.error "#{args.$0}: The size of the input does not correspond exactly to the requested number of words."
   process.exit 1
-
-console.log input
 
 # Pad (or truncate) if necessary or desired
 padded = pad(input, args.words)
@@ -135,7 +131,7 @@ words = (wordlists[args.language][indexes[i]] for i in [0...nWords])
 
 # Output
 if args.json
-  console.log JSON.stringify(words)
+  process.stdout.write JSON.stringify(words)
 else
   for w in words[0...-1]
     process.stdout.write w
