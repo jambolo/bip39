@@ -47,6 +47,8 @@ pad = (input, words) ->
     padded = input.slice 0, total
   else
     padded = Buffer.concat([input, Buffer.alloc(total - input.length, 0)])
+    if total > input.length
+      padded[padded.length-1] = input.length # Save length % 256 if padded
   return padded
 
 args = yargs
