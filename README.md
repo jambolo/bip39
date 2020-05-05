@@ -4,8 +4,6 @@ BIP-39 tools using Node and implemented in Coffeescript
 ## encode
 Encodes the input into a mnemonic string.
 
-Note that the size of a BIP-39 source must be a multiple of 32 bits. If the size of the input is not a multiple of 32 bits, then it is padded with 0's.
-
 #### Command syntax
 
     encode (hex|base58|base64) [--words <number>] [--strict] [--language english] [--json] <input>
@@ -27,6 +25,10 @@ Note that the size of a BIP-39 source must be a multiple of 32 bits. If the size
 | --language, -l                | The wordlist to use. Currently, only english is supported and it is the default. |
 | --json, -j                    | Outputs the words in json format |
 
+#### Notes
+
+* The size of a BIP-39 source must be a multiple of 32 bits. If the size of the input is not a multiple of 32 bits, then it is automatically padded with 0's.
+* If the input is _automatically_ padded (i.e, padded without the use of `--words` ), the length of the input (up to 255) is stored in the last byte of the padding. This is an incomplete solution to the problem of the varying size of a WIF-encoded private key. If you don't want this value in the padding, use `--words`.
 
 ## decode
 Decodes a mnemonic string back to the source value.
