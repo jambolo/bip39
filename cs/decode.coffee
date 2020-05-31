@@ -45,26 +45,26 @@ args = yargs
   }
   .check (argv) ->
     if argv.mnemonic.length < 3 or argv.mnemonic.length > 768 or argv.mnemonic.length % 3 != 0
-      throw new Error("The number of words must be a multiple of and 3 between 3 and 768.")
+      throw new Error "The number of words must be a multiple of and 3 between 3 and 768."
     if argv.format is "address" and argv.mnemonic.length != 21
-      throw new Error("A valid address must have 21 words.")
+      throw new Error "A valid address must have 21 words."
     if argv.format is "wif" and argv.mnemonic.length != 30
-      throw new Error("A valid private key must have 30 words.")
+      throw new Error "A valid private key must have 30 words."
     return true
   .argv
 
 # Get the indexes of the words
 indexes = []
 for m in args.mnemonic
-  i = wordlists[args.language].indexOf(m)
+  i = wordlists[args.language].indexOf m
   if i == -1
     console.error "#{args.$0}: '#{m}' is not in the '#{args.language}' word list."
     process.exit 1
   indexes.push i
 
 # Concatenate the indexes
-nbytes = Math.floor((indexes.length * 11 + 7) / 8)
-checked = Buffer.alloc(nbytes, 0)
+nbytes = Math.floor (indexes.length * 11 + 7) / 8
+checked = Buffer.alloc nbytes, 0
 b = -8
 acc = 0
 j = 0
@@ -81,18 +81,18 @@ for i in [0...nbytes]
 # Split the data and the checksum
 nCheckBits = indexes.length / 3
 nDataBytes = nCheckBits * 4
-padded = checked.slice(0, nDataBytes)
-checksum = checked.slice(nDataBytes)
+padded = checked.slice 0, nDataBytes
+checksum = checked.slice nDataBytes
 
 # Compare the checksum to the first nCheckBits of the SHA-256 of the padded data. To simplify the comparison, the bits
 # in the sha256 result that correspond to padding in the checksum are forced to 0 and only the relevant bytes are
 # compared.
-expected = sha256(padded)
+expected = sha256 padded
 if nCheckBits % 8 != 0
   expected[checksum.length-1] &= ~((1 << (8 - (nCheckBits % 8))) - 1)
 
 if checksum.compare(expected, 0, checksum.length) != 0
-  console.error "The mnemonic phrase's checksum does not match. The phrase is corrupted."
+  console.error "#{args.$0}: The mnemonic phrase's checksum does not match. The phrase is corrupted."
   process.exit 1
 
 # Generate the output

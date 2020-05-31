@@ -46,7 +46,7 @@ pad = (input, words) ->
   else if total < input.length
     padded = input.slice 0, total
   else
-    padded = Buffer.concat([input, Buffer.alloc(total - input.length, 0)])
+    padded = Buffer.concat [input, Buffer.alloc(total - input.length, 0)]
     if total > input.length and not words?
       padded[padded.length-1] = input.length # Save length % 256 if *automatically* padded
   return padded
@@ -93,14 +93,14 @@ args = yargs
   }
   .check (argv) ->
     if argv.words? and (argv.words < 3 or argv.words > 768 or argv.words % 3 != 0)
-      throw new Error("The number of words must be a multiple of and 3 between 3 and 768.")
+      throw new Error "The number of words must be a multiple of and 3 between 3 and 768."
     return true
   .argv
 
 # Convert the input to binary based on the type
 switch args.format
   when "hex" then input = Buffer.from args.input, "hex"
-  when "base58" then input = Base58.decode  args.input
+  when "base58" then input = Base58.decode args.input
   when "base64" then input = Buffer.from args.input, "base64"
 
 # If strict, then make sure the sizes match
@@ -109,14 +109,14 @@ if args.strict and args.words? and input.length != args.words / 3 * 4
   process.exit 1
 
 # Pad (or truncate) if necessary or desired
-padded = pad(input, args.words)
+padded = pad input, args.words
 nWords = padded.length / 4 * 3
 
 # Append the checksum
 checked = Buffer.concat [padded, sha256(padded)] # Note extra is ignored
 
 # Compute the word indexes
-indexes = new Array(nWords)
+indexes = new Array nWords
 b = -11
 acc = 0
 j = 0
@@ -135,7 +135,5 @@ words = (wordlists[args.language][indexes[i]] for i in [0...nWords])
 if args.json
   process.stdout.write JSON.stringify(words)
 else
-  for w in words[0...-1]
-    process.stdout.write w
-    process.stdout.write " "
+  process.stdout.write w + " " for w in words[0...-1]
   process.stdout.write words[words.length-1]
