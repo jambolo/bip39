@@ -88,7 +88,8 @@ checksum = checked.slice(nDataBytes)
 # in the sha256 result that correspond to padding in the checksum are forced to 0 and only the relevant bytes are
 # compared.
 expected = sha256(padded)
-expected[checksum.length-1] &= ~((1 << (8 - (nCheckBits % 8))) - 1)
+if nCheckBits % 8 != 0
+  expected[checksum.length-1] &= ~((1 << (8 - (nCheckBits % 8))) - 1)
 
 if checksum.compare(expected, 0, checksum.length) != 0
   console.error "The mnemonic phrase's checksum does not match. The phrase is corrupted."
