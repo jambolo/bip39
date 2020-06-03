@@ -5,7 +5,7 @@
 # 
 # Methods
 # 
-#   sss   Shamir Secret Sharing
+#   sss   Shamir's Secret Sharing
 #   xor   XOR
 # 
 # Sharing Parameters
@@ -18,7 +18,7 @@
 #   --language, -l    The wordlist to be used. Currently, only english is supported and it is the default. (optional)
 #   --json
 # 
-# One method of sharing is a secret is Shamir Secret Sharing (SSS). A description can be found here:
+# One method of sharing is a secret is Shamir's Secret Sharing (SSS). A description can be found here:
 # https://en.wikipedia.org/wiki/Shamir%27s_Secret_Sharing. Using SSS, you can generate N shares, of which M are
 # required in order to recreate the original mnemonic.
 # 
@@ -114,7 +114,7 @@ xor = (input, n) ->
     size = input.length
 
     # The first n-1 shares are just random
-    shares = (Crypto.randomBytes size for i in [0...n-1])
+    shares = (Crypto.randomBytes(size) for [0...n-1]) # this should be deterministic
 
     # The last share is the input XORed with all the other shares
     last = Buffer.from input
@@ -126,14 +126,44 @@ xor = (input, n) ->
     return shares
 
 sss = (input, m, n) ->
-  console.error "Shamir Secret Sharing is not yet implemented."
-  process.exit 1
-  return
+  p = 999999999989n # Biggest prime I could find. Must be 2^32-1 < p < 2^48 and must match join.coffee.
+
+  f = (x, s, coeffs) ->
+    xn = BigInt(x)
+    y = BigInt(s)
+    for c in coeffs
+      y = (y + xn * c) % p
+      xn = (xn * BigInt(x)) % p
+    return y
+
+  coefficients = (k) ->
+    coeffs = []
+    for [0...k]
+      r = Crypto.randomBytes 8 # this should be deterministic
+      c0 = BigInt(r.readUInt32BE(0))
+      c1 = BigInt(r.readUInt32BE(4))
+      coeffs.push ((c0 << 32n) + c1) % p
+    return coeffs
+
+  nBlocks = input.length / 4
+  shares = (Buffer.allocUnsafe(nBlocks * 8) for [0...n])
+  for b in [0...nBlocks]
+    block = input.readUInt32BE b * 4
+    coeffs = coefficients m-1
+    for share, i in shares
+      x = i + 1
+      y = f x, block, coeffs
+      y0 = Number(y >> 16n)
+      y1 = Number(y & 0xffffn)
+      share.writeUInt32BE y0, b * 8 + 0
+      share.writeUInt16BE y1, b * 8 + 4
+      share.writeUInt16BE x, b * 8 + 6
+  return shares
 
 # Configure the command line processing
 args = yargs
   .usage "$0 <method> <args..>"
-  .command "sss <M> <N> <mnemonic..>", "Use Shamir Secret Sharing to share a mnemonic phrase", (yargs) ->
+  .command "sss <M> <N> <mnemonic..>", "Use Shamir's Secret Sharing to share a mnemonic phrase", (yargs) ->
     yargs
       .positional "M", {
         type: "number"
@@ -173,10 +203,10 @@ args = yargs
     describe: "The words are listed in JSON format."
   }
   .check (argv) ->
-    if argv.mnemonic.length < 3 or argv.mnemonic.length > 768 or argv.mnemonic.length % 3 != 0
-      throw new Error "The number of words must be a multiple of and 3 between 3 and 768."
-    if argv.N < 2
-      throw new Error "The number of shares, N, must be at least 2."
+    if argv.mnemonic.length < 3 or argv.mnemonic.length % 3 != 0
+      throw new Error "The number of words must be a multiple of 3 and at least 3."
+    if argv.N < 2 or argv.N > 65535
+      throw new Error "The number of shares, N, must be at least 2 and no greater than 65535."
     if argv.M? and (argv.M < 1 or argv.M > argv.N)
       throw new Error "The threshold value, M, must be at least 1 and cannot be greater than the number of shares, N."
     return true
