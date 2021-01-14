@@ -161,6 +161,4 @@ phrases = (bip39.encode share, args.language for share in shares)
 if args.json
   process.stdout.write JSON.stringify(phrases)
 else
-  for phrase in phrases
-    process.stdout.write w + ' ' for w in phrase[0...-1]
-    process.stdout.write phrase[phrase.length - 1] + '\n'
+  process.stdout.write(bip39.stringify(phrase) + '\n') for phrase in phrases
