@@ -33,7 +33,6 @@
 yargs = require 'yargs'
 Base58 = require 'base-58'
 Crypto = require 'crypto'
-wordlists = require './wordlists'
 bip39 = require './bip39'
 
 # Creates n shares of the input using the XOR method

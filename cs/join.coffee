@@ -21,7 +21,6 @@ yargs = require 'yargs'
 Base58 = require 'base-58'
 Crypto = require 'crypto'
 readline = require 'readline'
-wordlists = require './wordlists'
 bip39 = require './bip39'
 
 class Mod

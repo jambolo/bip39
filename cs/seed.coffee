@@ -12,7 +12,6 @@
 
 yargs = require 'yargs'
 Crypto = require 'crypto'
-wordlists = require './wordlists'
 bip39 = require './bip39'
 
 validate = (mnemonic, language) ->
