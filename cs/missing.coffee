@@ -2,33 +2,33 @@
 #
 # Command syntax
 #
-#   missing [--language <language>] [--index <list>|--end|--any] [--count <N>] <mnemonic phrase>
+#   missing [--language <language>] [--indexes <list>|--end|--any] [--count <N>] [--verbose] [--json] <mnemonic phrase>
 #
 # Options
 #
 #   --any, -a       Signifies that the missing words in the phrase can be at any location. (optional)
 #   --count, -n     Total number of words in the mnemonic phrase. (default is a multiple of 3 and depends on how many
 #                   are known)
-#   --end, -e       Signifies that the last words in phrase are missing. This option is overridden by --any and
-#                   --index. (default)
+#   --end, -e       Signifies that the last words in phrase are missing. (default)
 #   --indexes, -i   List of the possible locations of the missing words. The first location is 1. Use - to end the
-#                   list if it is not followed by another option. This option overrides --end and --any (optional)
-#   --json, -j      Outputs the possible mnemonics in json format. (optional)
+#                   list if it is not followed by another option. (optional)
+#   --json, -j      The possible mnemonics are listed in json format. (optional)
 #   --language, -l  The wordlist to be used. Currently, only *english* is supported and it is the default. (optional)
+#   --verbose, -v   Displays helpful information in addition to the results. (optional)
 #
 # Examples:
 #
-# All but the last words of a 12-word mnemonic are known:
-#     missing crisp three spoil enhance dial client moment melt parade aisle
+#   All but the last two words of a 12-word mnemonic are known:
+#      missing crisp three spoil enhance dial client moment melt parade aisle
 #
-# Missing words could be anywhere in the mnemonic:
-#     missing --any crisp three enhance dial client melt parade aisle analyst case
+#   Two missing words could be anywhere:
+#      missing --any crisp three enhance dial client melt parade aisle analyst case
 #
-# Words 1, 3, and 7 are missing:
-#     missing --index 1 3 7 -- three enhance dial client melt parade aisle analyst case
+#   The two missing words could be at locations 1, 3, or 7:
+#      missing --indexes 1 3 7 --count 12 crisp three enhance dial client melt parade aisle analyst case
 #
-# A count must be specified because only 8 of 12 words are listed:
-#     missing --end --count 12 crisp three spoil enhance dial client moment melt parade
+#   A count should be specified because eight known words implies a 9-word phrase and this one has 12 words:
+#      missing --count 12 crisp three spoil enhance dial client moment melt:
 
 yargs = require 'yargs'
 Crypto = require 'crypto'
@@ -115,7 +115,7 @@ args = yargs
     type: 'boolean'
     alias: 'j'
     default: false
-    describe: 'The phrases are listed in JSON format.'
+    describe: 'The possible mnemonics are listed in JSON format.'
   }
   .option 'language', {
     type: 'string'
@@ -127,7 +127,7 @@ args = yargs
   .option 'v', {
     type: 'count'
     alias: 'verbose'
-    describe: 'Additional information is displayed.'
+    describe: 'Displays helpful information in addition to the results.'
   }
   .example [
     [
@@ -139,12 +139,12 @@ args = yargs
       'Two missing words could be anywhere.'
     ]
     [
-      '$0 --indexes 1 3 7 - crisp three enhance dial client melt parade aisle analyst case'
+      '$0 --indexes 1 3 7 --count 12 crisp three enhance dial client melt parade aisle analyst case'
       'The two missing words could be at locations 1, 3, or 7.'
     ]
     [
       '$0 --count 12 crisp three spoil enhance dial client moment melt'
-      'A count should be specified because eight known words implies a 9-word phrase.'
+      'A count should be specified because eight known words implies a 9-word phrase and this one has 12 words'
     ]
   ]
   .check (argv) ->

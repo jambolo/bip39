@@ -126,3 +126,40 @@ Uses Shamir Secret Sharing or XOR method to recreate the original mnemonic phras
 | --json, -j     | Outputs the words in json format. (optional) |
 
 The shares are read from stdin, one per line and joined using SSS or the XOR method.
+
+## missing
+Generates all possible mnemonic phrases, given a partial mnemonic phrase.
+
+#### Command syntax
+
+    missing [--language <language>] [--indexes <list>|--end|--any] [--count <N>] [--verbose] [--json] <mnemonic phrase>
+
+#### Options
+
+| Option         | Description |
+|----------------|-------------|
+| --any, -a      | Signifies that the missing words in the phrase can be at any location. (optional) |
+| --count, -n    | Total number of words in the mnemonic phrase. (default is a multiple of 3 and depends on how many are known) |
+| --end, -e      | Signifies that the last words in phrase are missing. (default) |
+| --indexes, -i  | List of the possible locations of the missing words. The first location is 1. Use - to end the list if it is not followed by another option. (optional) |
+| --json, -j     | The possible mnemonics are listed in json format. (optional)
+| --language, -l | The wordlist to be used. Currently, only *english* is supported and it is the default. (optional)
+| --verbose, -v  | Displays helpful information in addition to the results. (optional)
+
+#### Examples:
+
+* All but the last two words of a 12-word mnemonic are known:
+
+      missing crisp three spoil enhance dial client moment melt parade aisle
+
+* Two missing words could be anywhere:
+
+      missing --any crisp three enhance dial client melt parade aisle analyst case
+
+* The two missing words could be at locations 1, 3, or 7:
+
+      missing --indexes 1 3 7 --count 12 crisp three enhance dial client melt parade aisle analyst case
+
+* A count should be specified because eight known words implies a 9-word phrase and this one has 12 words:
+
+      missing --count 12 crisp three spoil enhance dial client moment melt:
