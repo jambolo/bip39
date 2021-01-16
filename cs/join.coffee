@@ -138,5 +138,4 @@ rl.on 'close', ->
   if args.json
     process.stdout.write JSON.stringify(words)
   else
-    process.stdout.write w + ' ' for w in words[0...-1]
-    process.stdout.write words[words.length - 1]
+    process.stdout.write bip39.stringify(words)

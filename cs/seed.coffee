@@ -54,9 +54,7 @@ if args.validate
     process.exit 1
 
 # Create the 'sentence' from the words
-sentence = ''
-sentence += w + ' ' for w in args.mnemonic[0...-1]
-sentence += args.mnemonic[args.mnemonic.length - 1]
+sentence = bip39.stringify(args.mnemonic)
 
 # Generate the seed
 seed = Crypto.pbkdf2Sync sentence, 'mnemonic' + args.passphrase, 2048, 64, 'sha512'

@@ -73,11 +73,8 @@ encode = (data, language) ->
 
 stringify = (words) ->
   text = ''
-  for i in [0...words.length - 1]
-    text += if words[i] then words[i] else '?'
-    text += ' '
+  text += (if w then w else '?') + ' ' for w in words[...-1]
   text += if words[words.length - 1] then words[words.length - 1] else '?'
-  text
 
 wordlists =
   # From https://github.com/bitcoin/bips/blob/master/bip-0039/english.txt
