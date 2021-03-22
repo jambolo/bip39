@@ -187,8 +187,8 @@ for c in indexCombinations
 
   # Check each enumeration
   enumerate template, c, bip39.wordlists[args.language], (mnemonic) ->
-    [ok, result] = bip39.decode mnemonic, args.language
-    if ok
+    result = bip39.decode mnemonic, args.language
+    if result.valid
       possibilities.push bip39.stringify(mnemonic)
     true
 

@@ -48,9 +48,9 @@ args = yargs
 
 # Validate the mnemonic words if requested
 if args.validate
-  [ok, result] = bip39.decode args.mnemonic, args.language
-  if not ok
-    console.error "#{args.$0}: ", result
+  result = bip39.decode args.mnemonic, args.language
+  if not result.valid
+    console.error "#{args.$0}: ", result.message
     process.exit 1
 
 # Create the 'sentence' from the words

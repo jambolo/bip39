@@ -120,11 +120,11 @@ rl.on 'line', (line) ->
 rl.on 'close', ->
   decoded = []
   for share in shares
-    [ok, result] = bip39.decode share, args.language
-    if not ok
-      console.error "#{args.$0}: ", result
+    result = bip39.decode share, args.language
+    if not result.valid
+      console.error "#{args.$0}: ", result.message
       process.exit 1
-    decoded.push result
+    decoded.push result.data
 
   # Generate the shares
   switch args.method

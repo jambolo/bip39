@@ -7,11 +7,22 @@ sha256 = (input) ->
 
 # Returns the decoded BIP-39 mnemonic or an error message
 decode = (mnemonic, language) ->
+  # Ensure that the number of words is a positive multiple of 3
+  if mnemonic.length <= 0 or mnemonic.length % 3 != 0
+    return {
+      valid: false
+      message: "The mnemonic phrase has #{mnemonic.length} words, which is not a positive multiple of 3."
+    }
+
+  # Ensure that the language is supported
+  if not wordlists[language]?
+    return { valid: false, message: "'#{language}' is not a supported word list." }
+
   # Get the indexes of the words
   indexes = []
   for m in mnemonic
     i = wordlists[language].indexOf m
-    return [false, "#{m}' is not in the '#{language}' word list."] if i == -1
+    return { valid: false, message: "'#{m}' is not in the '#{language}' word list." } if i == -1
     indexes.push i
 
   # Concatenate the indexes
@@ -44,9 +55,9 @@ decode = (mnemonic, language) ->
     expected[checksum.length - 1] &= ~((1 << (8 - (nCheckBits % 8))) - 1)
 
   if checksum.compare(expected, 0, checksum.length) != 0
-    return [false, "The mnemonic phrase's checksum does not match. The phrase is corrupted."]
+    return { valid: false, message: "The mnemonic phrase's checksum does not match. The phrase is corrupted." }
 
-  [true, data]
+  { valid: true, data }
 
 # Returns the BIP-39 encode of the input
 encode = (data, language) ->
@@ -68,13 +79,16 @@ encode = (data, language) ->
     acc = acc % (1 << b)
     b -= 11
 
-  # Get the words and save the phrase
+  # Get the words and return the phrase as an array
   (wordlists[language][i] for i in indexes)
 
+# Converts an array of words to a string of words separated by spaces
 stringify = (words) ->
   text = ''
-  text += (if w then w else '?') + ' ' for w in words[...-1]
-  text += if words[words.length - 1] then words[words.length - 1] else '?'
+  if words.length > 0
+    text += (if w then w else '?') + ' ' for w in words[...-1]
+    text += if words[words.length - 1] then words[words.length - 1] else '?'
+  text
 
 wordlists =
   # From https://github.com/bitcoin/bips/blob/master/bip-0039/english.txt

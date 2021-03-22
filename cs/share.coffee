@@ -51,6 +51,7 @@ xor = (input, n) ->
 
   return shares
 
+# Create n shares of the input (of which m are required) using Shamir's Secret Sharing
 sss = (input, m, n) ->
   p = 999999999989n # Biggest prime I could find. Must be 2^32-1 < p < 2^48 and must match join.coffee.
 
@@ -142,16 +143,16 @@ args = yargs
     return true
   .argv
 
-
-[ok, result] = bip39.decode args.mnemonic, args.language
-if not ok
-  console.error '#{args.$0}: ', result
+# Recover the original entropy
+result = bip39.decode args.mnemonic, args.language
+if not result.valid
+  console.error '#{args.$0}: ', result.message
   process.exit 1
 
 # Generate the shares
 switch args._[0]
-  when 'sss' then shares = sss result, args.M, args.N
-  when 'xor' then shares = xor result, args.N
+  when 'sss' then shares = sss result.data, args.M, args.N
+  when 'xor' then shares = xor result.data, args.N
 
 # BIP-39 encode the shares
 phrases = (bip39.encode share, args.language for share in shares)

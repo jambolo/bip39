@@ -53,18 +53,19 @@ args = yargs
     return true
   .argv
 
-[ok, result] = bip39.decode args.mnemonic, args.language
-if not ok
-  console.error '#{args.$0}: ', result
+result = bip39.decode args.mnemonic, args.language
+if not result.valid
+  console.error '#{args.$0}: ', result.message
   process.exit 1
 
 # Generate the output
 switch args.format
   when 'address', 'wif'
-    actualLength = result[result.length - 1]
-    output = Base58.encode result.slice(0, actualLength)
-  when 'base58' then output = Base58.encode  result
-  when 'base64' then output = result.toString 'base64'
-  when 'hex' then output = result.toString 'hex'
+    data = result.data
+    actualLength = data[data.length - 1]
+    output = Base58.encode data.slice(0, actualLength)
+  when 'base58' then output = Base58.encode  data
+  when 'base64' then output = data.toString 'base64'
+  when 'hex' then output = data.toString 'hex'
 
 process.stdout.write output
